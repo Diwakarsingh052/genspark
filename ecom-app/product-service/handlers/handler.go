@@ -5,12 +5,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
+	"product-service/internal/auth"
 	"product-service/internal/products"
 	"product-service/middleware"
 	"product-service/pkg/ctxmanage"
 )
 
-func API(p products.Conf, endpointPrefix string) *gin.Engine {
+func API(p products.Conf, endpointPrefix string, k *auth.Keys) *gin.Engine {
 
 	r := gin.New()
 	mode := os.Getenv("GIN_MODE")
@@ -19,7 +20,7 @@ func API(p products.Conf, endpointPrefix string) *gin.Engine {
 	} else {
 		gin.SetMode(gin.DebugMode)
 	}
-
+	m := middleware.NewMid(k)
 	//s := models.NewStore(&c)
 	h := handler{Conf: p}
 	//apply middleware to all the endpoints using r.Use
@@ -28,8 +29,12 @@ func API(p products.Conf, endpointPrefix string) *gin.Engine {
 	v1 := r.Group(endpointPrefix)
 	{
 		v1.Use(middleware.Logger())
-		v1.POST("/create", h.CreateProduct)
+
 		v1.GET("/stock/:productID", h.ProductStockAndStripePriceId)
+
+		v1.Use(m.Authentication())
+		// TODO:
+		v1.POST("/create", m.Authorize(h.CreateProduct, auth.RoleAdmin))
 
 	}
 
