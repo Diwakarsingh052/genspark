@@ -12,3 +12,9 @@ https://mholt.github.io/json-to-go/
 
 convert xml to Go
 https://blog.kowalczyk.info/tools/xmltogo/
+
+
+Protobuf
+grpc.io
+https://protobuf.dev/programming-guides/proto3/
+https://protobuf.dev/programming-guides/style/
